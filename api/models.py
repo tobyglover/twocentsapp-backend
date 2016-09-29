@@ -5,17 +5,20 @@ from django.db import models
 # Create your models here.
 
 class User(models.Model):
-	user_id = models.CharField(max_length=200)
+	user = models.CharField(max_length=200)
 	created = models.DateTimeField()
 	username = models.CharField(max_length=100)
 
 class Poll(models.Model):
-	text = models.CharField(max_length=500)
+	poll = models.CharField(max_length=200)
+	user = models.CharField(max_length=200)
+	question = models.CharField(max_length=500)
+	loc_lat = models.DecimalField(max_digits=9, decimal_places=6)
+	loc_long = models.DecimalField(max_digits=9, decimal_places=6)
 	created = models.DateTimeField()
-	poll_id = models.CharField(max_length=200)
 
 class Votes(models.Model):
-	poll_id = models.CharField(max_length=200)
-	user_id = models.CharField(max_length=200)
-	result = models.IntegerField()
+	poll = models.CharField(max_length=200)
+	user = models.CharField(max_length=200)
+	vote = models.IntegerField()
 	created = models.DateTimeField()
