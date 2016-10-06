@@ -8,5 +8,5 @@ urlpatterns = [
     # ex: /api/createNewUser/
     url(r'^createNewUser/$', views.createNewUser, name="CreateNewUser"),
     # ex: /api/createNewPoll/<userKey>/
-    url(r'^createNewPoll/(?P<userKey>[0-9]+)$', views.createNewPoll, name="createNewPoll")
+    url(r'^createNewPoll/(?P<userKey>[0-9a-zA-Z]+)$', views.createNewPoll, name="createNewPoll")
 ]

@@ -10,7 +10,7 @@ class Users(models.Model):
 	username = models.CharField(max_length=100, blank=True)
 
 class Polls(models.Model):
-	poll = models.CharField(max_length=200, blank=True)
+	pollKey = models.CharField(max_length=200, blank=True)
 	user = models.ForeignKey(Users, on_delete=models.DO_NOTHING)
 	question = models.CharField(max_length=500)
 	loc_lat = models.DecimalField(max_digits=9, decimal_places=6)
