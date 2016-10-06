@@ -46,10 +46,8 @@ def createNewPoll(request, userKey):
 			newPoll.save()
 
 			# Temporary: For MVP, just yes or no. Eventually user will be able to make their own options.
-			yes = PollOptions(poll=newPoll, option="Yes")
-			no = PollOptions(poll=newPoll, option="No")
-			yes.save()
-			no.save()
+			yes = PollOptions(poll=newPoll, option="Yes").save()
+			no = PollOptions(poll=newPoll, option="No").save()
 
 			returnContent["statusCode"] = 200
 			returnContent["pollId"] = newPoll.pollKey
