@@ -20,9 +20,9 @@ def createNewUser(request):
 		userKey = hashlib.sha224(deviceId + datetime.utcnow().isoformat()).hexdigest()
 
 		if "username" in request.GET: # THIS MAY BE A HUGE SECURITY VULNERABILITY
-			newUser = Users(user=userKey, username=request.GET.get(username))
+			newUser = Users(userKey=userKey, username=request.GET.get(username))
 		else:
-			newUser = Users(user=userKey)
+			newUser = Users(userKey=userKey)
 		newUser.save()
 
 		returnContent["statusCode"] = 200
@@ -32,3 +32,8 @@ def createNewUser(request):
 		returnContent["reason"] = "No deviceId found."
 	
 	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+
+def createNewPoll(request, userKey):
+	returnContent = {}
+
+	return
