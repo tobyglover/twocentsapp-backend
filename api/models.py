@@ -5,7 +5,7 @@ from django.db import models
 # Create your models here.
 
 class Users(models.Model):
-	user = models.CharField(max_length=200)
+	user = models.CharField(max_length=200, unique=True)
 	created = models.DateTimeField()
 	username = models.CharField(max_length=100)
 
