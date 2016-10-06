@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .models import Users, Polls
+from .models import Users, Polls, PollOptions
 
 import hashlib
 from datetime import datetime
@@ -44,6 +44,12 @@ def createNewPoll(request, userKey):
 			newPoll.save()
 			newPoll.pollKey = hashlib.sha224(str(newPoll.id) + datetime.utcnow().isoformat()).hexdigest()
 			newPoll.save()
+
+			# Temporary: For MVP, just yes or no. Eventually user will be able to make their own options.
+			yes = PollOptions(poll=newPoll, option="Yes")
+			no = PollOptions(poll=newPoll, option="No")
+			yes.save()
+			no.save()
 
 			returnContent["statusCode"] = 200
 			returnContent["pollId"] = newPoll.pollKey
