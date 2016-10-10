@@ -77,13 +77,8 @@ def voteOnPoll(request, userKey, pollId, optionId):
 			poll = Polls.objects.get(pollId=pollId)
 			try:
 				pollOption = PollOptions.objects.get(optionId=optionId)
-				try:
-					vote = Votes.objects.get(poll=poll, user=user)
-					vote.vote = pollOption
-					vote.save()
-				except:
-					Votes(poll=poll, user=user, vote=pollOption).save()
-				
+
+				vote, created = Votes.objects.update_or_create(poll=poll, user=user, vote=pollOption)
 				returnContent["statusCode"] = 200	
 
 			except PollOptions.DoesNotExist:
@@ -102,10 +97,25 @@ def getPolls(request):
 	returnContent = {}
 	if {'lng', 'lat', 'radius'} <= set(request.GET):
 		# cheating, currently just returns all polls regardless of distance
+		returnedPolls = []
+		polls = Polls.objects.all()
+		for poll in polls:
+			pollData = {"question": poll.question, "created": poll.created.strftime("%s"), "pollId": poll.pollId}
+			pollOptions = PollOptions.objects.filter(poll=poll)
 
+			returnedVotes = {}
+			for pollOption in pollOptions:
+				returnedVotes[pollOption.option] = {"optionId": pollOption.optionId, "count": 0}
+
+			votes = Votes.objects.filter(poll=poll)
+			for vote in votes:
+				returnedVotes[vote.vote.option]["count"] += 1
+
+			pollData["votes"] = returnedVotes
+			returnedPolls.append(pollData)
 
 		returnContent["statusCode"] = 200
-		returnContent["polls"] = polls
+		returnContent["polls"] = returnedPolls
 	else:
 		returnContent["statusCode"] = 403
 		returnContent["reason"] = "lat/lng and radius not specified"
