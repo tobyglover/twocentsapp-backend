@@ -17,7 +17,7 @@ def createNewUser(request):
 
 	if "deviceId" in request.GET:
 		deviceId = request.GET.get("deviceId")
-		userKey = hashlib.sha224(deviceId + datetime.utcnow().isoformat()).hexdigest()
+		userKey = hashlib.md5(deviceId + datetime.utcnow().isoformat()).hexdigest()
 
 		if "username" in request.GET:
 			newUser = Users(userKey=userKey, username=request.GET.get(username))
@@ -42,19 +42,19 @@ def createNewPoll(request, userKey):
 
 			newPoll = Polls(user=user, question=request.GET.get("question"), loc_lat=request.GET.get("lat"), loc_lng=request.GET.get("lng"))
 			newPoll.save()
-			newPoll.pollId = hashlib.sha224(str(newPoll.id) + datetime.utcnow().isoformat()).hexdigest()
+			newPoll.pollId = hashlib.md5(str(newPoll.id) + datetime.utcnow().isoformat()).hexdigest()
 			newPoll.save()
 
 			# Temporary: For MVP, just yes or no. Eventually user will be able to make their own options.
 			yes = PollOptions(poll=newPoll, option="Yes")
 			no = PollOptions(poll=newPoll, option="No")
-			
+
 			yes.save()
-			yes.optionId = hashlib.sha224(str(yes.id) + datetime.utcnow().isoformat()).hexdigest()
+			yes.optionId = hashlib.md5(str(yes.id) + datetime.utcnow().isoformat()).hexdigest()
 			yes.save()
 
 			no.save()
-			no.optionId = hashlib.sha224(str(no.id) + datetime.utcnow().isoformat()).hexdigest()
+			no.optionId = hashlib.md5(str(no.id) + datetime.utcnow().isoformat()).hexdigest()
 			no.save()
 
 			returnContent["statusCode"] = 200
