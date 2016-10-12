@@ -20,7 +20,7 @@ def createNewUser(request):
 		userKey = hashlib.md5(deviceId + datetime.utcnow().isoformat()).hexdigest()
 
 		if "username" in request.GET:
-			newUser = Users(userKey=userKey, username=request.GET.get(username))
+			newUser = Users(userKey=userKey, username=request.GET.get("username"))
 		else:
 			newUser = Users(userKey=userKey)
 		newUser.save()
