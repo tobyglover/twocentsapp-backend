@@ -48,11 +48,13 @@ def createNewPoll(request, userKey):
 			# Temporary: For MVP, just yes or no. Eventually user will be able to make their own options.
 			yes = PollOptions(poll=newPoll, option="Yes")
 			no = PollOptions(poll=newPoll, option="No")
+			
 			yes.save()
-			no.save()
 			yes.optionId = hashlib.sha224(str(yes.id) + datetime.utcnow().isoformat()).hexdigest()
-			no.optionId = hashlib.sha224(str(no.id) + datetime.utcnow().isoformat()).hexdigest()
 			yes.save()
+
+			no.save()
+			no.optionId = hashlib.sha224(str(no.id) + datetime.utcnow().isoformat()).hexdigest()
 			no.save()
 
 			returnContent["statusCode"] = 200
