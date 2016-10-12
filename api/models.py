@@ -19,7 +19,7 @@ class Polls(models.Model):
 
 class PollOptions(models.Model):
 	poll = models.ForeignKey(Polls, on_delete=models.DO_NOTHING)
-	optionId = models.CharField(max_length=200, blank=True, unique=True)
+	optionId = models.CharField(max_length=200, blank=True)
 	option = models.CharField(max_length=200)
 
 class Votes(models.Model):
