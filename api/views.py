@@ -40,7 +40,7 @@ def createNewUser(request):
 		returnContent["statusCode"] = 400
 		returnContent["reason"] = "No deviceId provided."
 	
-	return JsonResponse(returnContent, status=returnContent["statusCode"], content_type="application/json")
+	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
 def isUsernameAvailable(request):
 	returnContent = {}
@@ -55,7 +55,7 @@ def isUsernameAvailable(request):
 		returnContent["statusCode"] = 400
 		returnContent["reason"] = "No username provided."
 
-	return JsonResponse(returnContent, status=returnContent["statusCode"], content_type="application/json")
+	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
 
 def usernameAvailable(username):
@@ -95,7 +95,7 @@ def createNewPoll(request, userKey):
 		returnContent["statusCode"] = 400
 		returnContent["reason"] = "Not all data given."
 
-	return JsonResponse(returnContent, status=returnContent["statusCode"], content_type="application/json")
+	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
 def voteOnPoll(request, userKey, pollId, optionId):
 	returnContent = {}
@@ -121,7 +121,7 @@ def voteOnPoll(request, userKey, pollId, optionId):
 		returnContent["statusCode"] = 403
 		returnContent["reason"] = "User does not exist."
 
-	return JsonResponse(returnContent, status=returnContent["statusCode"], content_type="application/json")
+	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
 def getPolls(request):
 	returnContent = {}
@@ -153,7 +153,7 @@ def getPolls(request):
 		returnContent["statusCode"] = 403
 		returnContent["reason"] = "lat/lng and radius not specified"
 
-	return JsonResponse(returnContent, status=returnContent["statusCode"], content_type="application/json")
+	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
 
 
