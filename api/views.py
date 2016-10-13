@@ -10,7 +10,7 @@ import json
 # Create your views here.
 
 def index(request):
-	return HttpResponse("the api index", content_type="application/json")
+	return HttpResponse("You are at the api index")
 
 def createNewUser(request):
 	returnContent = {}
