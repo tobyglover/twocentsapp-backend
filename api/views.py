@@ -23,11 +23,11 @@ def createNewUser(request):
 
 		if "username" in request.GET:
 			username = request.GET.get("username")
-			if Users.objects.filter(username=username).count() != 0:
+			if usernameAvailable(username):
+				newUser = Users(userKey=userKey, username=username)
+			else:
 				returnContent["statusCode"] = 400
 				returnContent["reason"] = "Username is already taken"
-			else:
-				newUser = Users(userKey=userKey, username=username)
 		else:
 			newUser = Users(userKey=userKey)
 
@@ -38,9 +38,28 @@ def createNewUser(request):
 			returnContent["userKey"] = userKey
 	else:	
 		returnContent["statusCode"] = 400
-		returnContent["reason"] = "No deviceId found."
+		returnContent["reason"] = "No deviceId provided."
 	
 	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+
+def isUsernameAvailable(request):
+	returnContent = {}
+
+	if "username" in request.GET:
+		if usernameAvailable(request.GET.get("username")):
+			returnContent["available"] = True
+		else:
+			returnContent["available"] = False
+		returnContent["statusCode"] = 200
+	else:
+		returnContent["statusCode"] = 400
+		returnContent["reason"] = "No username provided."
+
+	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+
+
+def usernameAvailable(username):
+	return Users.objects.filter(username=username).count() == 0
 
 def createNewPoll(request, userKey):
 	returnContent = {}
