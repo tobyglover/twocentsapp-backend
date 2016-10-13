@@ -131,6 +131,9 @@ def getPolls(request):
 		polls = Polls.objects.all()
 		for poll in polls:
 			pollData = {"question": poll.question, "created": poll.created.strftime("%s"), "pollId": poll.pollId}
+			if poll.user.username != "":
+				pollData["username"] = poll.user.username
+				
 			pollOptions = PollOptions.objects.filter(poll=poll)
 
 			returnedVotes = {}
