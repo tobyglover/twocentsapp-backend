@@ -128,7 +128,7 @@ def getPolls(request):
 	if {'lng', 'lat', 'radius'} <= set(request.GET):
 		# cheating, currently just returns all polls regardless of distance
 		returnedPolls = []
-		polls = Polls.objects.all()
+		polls = Polls.objects.all().order_by("-created")
 		for poll in polls:
 			pollData = {"question": poll.question, "created": poll.created.strftime("%s"), "pollId": poll.pollId}
 			if poll.user.username != "":
