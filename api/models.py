@@ -7,7 +7,7 @@ from django.db import models
 class Users(models.Model):
 	userKey = models.CharField(max_length=200, unique=True)
 	created = models.DateTimeField(auto_now=True)
-	username = models.CharField(max_length=100, blank=True, unique=True)
+	username = models.CharField(max_length=100, blank=True)
 
 class Polls(models.Model):
 	pollId = models.CharField(max_length=200, blank=True)
