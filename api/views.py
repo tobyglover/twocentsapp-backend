@@ -16,17 +16,26 @@ def createNewUser(request):
 	returnContent = {}
 
 	if "deviceId" in request.GET:
+		newUser = None
+
 		deviceId = request.GET.get("deviceId")
 		userKey = hashlib.md5(deviceId + datetime.utcnow().isoformat()).hexdigest()
 
 		if "username" in request.GET:
-			newUser = Users(userKey=userKey, username=request.GET.get("username"))
+			username = request.GET.get("username")
+			if Users.objects.filter(username=username).count() != 0:
+				returnContent["statusCode"] = 400
+				returnContent["reason"] = "Username is already taken"
+			else:
+				newUser = Users(userKey=userKey, username=username)
 		else:
 			newUser = Users(userKey=userKey)
-		newUser.save()
 
-		returnContent["statusCode"] = 200
-		returnContent["userKey"] = userKey
+		if newUser != None:
+			newUser.save()
+
+			returnContent["statusCode"] = 200
+			returnContent["userKey"] = userKey
 	else:	
 		returnContent["statusCode"] = 400
 		returnContent["reason"] = "No deviceId found."
