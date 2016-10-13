@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from .models import Users, Polls, PollOptions, Votes
 
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 
 # Create your views here.
@@ -130,7 +130,13 @@ def getPolls(request):
 		returnedPolls = []
 		polls = Polls.objects.all().order_by("-created")
 		for poll in polls:
-			pollData = {"question": poll.question, "created": poll.created.strftime("%s"), "pollId": poll.pollId}
+			pollData = {"question": poll.question, "pollId": poll.pollId}
+
+			curtime = datetime.utcnow()
+			diff = curtime - poll.created.replace(tzinfo=None)
+
+			pollData["createdAgo"] = int(diff.total_seconds())
+
 			if poll.user.username != "":
 				pollData["username"] = poll.user.username
 
