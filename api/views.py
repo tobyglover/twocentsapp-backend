@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpRespons, content_type="application/json"e
 
 from .models import Users, Polls, PollOptions, Votes
 
@@ -10,7 +10,7 @@ import json
 # Create your views here.
 
 def index(request):
-	return HttpResponse("You're at the api index.")
+	return HttpResponse("You're at the api index.", content_type="application/json")
 
 def createNewUser(request):
 	returnContent = {}
@@ -40,7 +40,7 @@ def createNewUser(request):
 		returnContent["statusCode"] = 400
 		returnContent["reason"] = "No deviceId provided."
 	
-	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"], content_type="application/json")
 
 def isUsernameAvailable(request):
 	returnContent = {}
@@ -55,7 +55,7 @@ def isUsernameAvailable(request):
 		returnContent["statusCode"] = 400
 		returnContent["reason"] = "No username provided."
 
-	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"], content_type="application/json")
 
 
 def usernameAvailable(username):
@@ -95,7 +95,7 @@ def createNewPoll(request, userKey):
 		returnContent["statusCode"] = 400
 		returnContent["reason"] = "Not all data given."
 
-	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"], content_type="application/json")
 
 def voteOnPoll(request, userKey, pollId, optionId):
 	returnContent = {}
@@ -121,7 +121,7 @@ def voteOnPoll(request, userKey, pollId, optionId):
 		returnContent["statusCode"] = 403
 		returnContent["reason"] = "User does not exist."
 
-	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"], content_type="application/json")
 
 def getPolls(request):
 	returnContent = {}
@@ -133,7 +133,7 @@ def getPolls(request):
 			pollData = {"question": poll.question, "created": poll.created.strftime("%s"), "pollId": poll.pollId}
 			if poll.user.username != "":
 				pollData["username"] = poll.user.username
-				
+
 			pollOptions = PollOptions.objects.filter(poll=poll)
 
 			returnedVotes = {}
@@ -153,7 +153,7 @@ def getPolls(request):
 		returnContent["statusCode"] = 403
 		returnContent["reason"] = "lat/lng and radius not specified"
 
-	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"])
+	return HttpResponse(json.dumps(returnContent), status=returnContent["statusCode"], content_type="application/json")
 
 
 
