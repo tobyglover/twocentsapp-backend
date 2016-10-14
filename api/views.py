@@ -1,3 +1,5 @@
+from __future__ import division
+
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 
@@ -6,6 +8,7 @@ from .models import Users, Polls, PollOptions, Votes
 import hashlib
 from datetime import datetime, timedelta
 import json
+from math import asin, cos, degrees, radians
 
 # Create your views here.
 
@@ -126,8 +129,9 @@ def voteOnPoll(request, userKey, pollId, optionId):
 def getPolls(request):
 	returnContent = {}
 	if {'lng', 'lat', 'radius'} <= set(request.GET):
-		# cheating, currently just returns all polls regardless of distance
 		returnedPolls = []
+
+		# polls = retrievePollsAtLocation(float(request.GET.get("lng")), float(request.GET.get("lat")), float(request.GET.get("radius")))
 		polls = Polls.objects.all().order_by("-created")
 		for poll in polls:
 			pollData = {"question": poll.question, "pollId": poll.pollId}
@@ -163,14 +167,26 @@ def getPolls(request):
 
 
 
+# adapted from http://www.movable-type.co.uk/scripts/latlong-db.html
+def retrievePollsAtLocation(lng, lat, radius):
+	# mean radius of Earth in km
+	earthRadius = 6371
 
+	maxLat = lat + degrees(radius / earthRadius)
+    minLat = lat - degrees(radius / earthRadius)
+    maxLng = lng + degrees(asin(radius / earthRadius) / cos(radians(lat)))
+    minLng = lng - degrees(asin(radius / earthRadius) / cos(radians(lat)))
 
-
-
-
-
-
-
+    return Polls.objects.raw('''SELECT * 
+            					FROM (
+        			               SELECT *
+        			               FROM api_polls
+        			               WHERE loc_lat BETWEEN %(minLat)s AND %(maxLat)s
+        			                 AND loc_lng BETWEEN %(minLng)s AND %(maxLng)s
+        			            ) As FirstCut
+        			            WHERE acos(sin(%(lat)s)*sin(radians(loc_lat)) + cos(%(lat)s)*cos(radians(loc_lat))*cos(radians(loc_lng)-%(lon)s)) * %(earthRadius)s < %(radius)s
+        			            ORDER BY created;
+            				 ''', {"lat":lat, "lng":lng, "radius":radius, "maxLat":maxLat, "minLat":minLat, "maxLng":maxLng, "minLng":minLng, "earthRadius":earthRadius})
 
 
 
