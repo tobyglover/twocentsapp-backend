@@ -68,12 +68,12 @@ def usernameAvailable(username):
 @csrf_exempt
 def createNewPoll(request, userKey):
 	returnContent = {}
-
-	if {'question', 'lng', 'lat'} <= set(request.POST):
+	data = json.loads(request.body)
+	if {'question', 'lng', 'lat'} <= set(data):
 		try:
 			user = Users.objects.get(userKey=userKey)
 
-			newPoll = Polls(user=user, question=request.GET.get("question"), loc_lat=request.GET.get("lat"), loc_lng=request.GET.get("lng"))
+			newPoll = Polls(user=user, question=data.get("question"), loc_lat=data.get("lat"), loc_lng=data.get("lng"))
 			newPoll.save()
 			newPoll.pollId = hashlib.md5(str(newPoll.id) + datetime.utcnow().isoformat()).hexdigest()
 			newPoll.save()
