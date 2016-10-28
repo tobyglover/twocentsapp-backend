@@ -67,7 +67,7 @@ def usernameAvailable(username):
 def createNewPoll(request, userKey):
 	returnContent = {}
 
-	if {'question', 'lng', 'lat'} <= set(request.GET):
+	if {'question', 'lng', 'lat'} <= set(request.POST):
 		try:
 			user = Users.objects.get(userKey=userKey)
 
