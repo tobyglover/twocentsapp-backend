@@ -173,19 +173,19 @@ def retrievePollsAtLocation(lng, lat, radius):
 	earthRadius = 6371
 
 	maxLat = lat + degrees(radius / earthRadius)
-    minLat = lat - degrees(radius / earthRadius)
-    maxLng = lng + degrees(asin(radius / earthRadius) / cos(radians(lat)))
-    minLng = lng - degrees(asin(radius / earthRadius) / cos(radians(lat)))
+	minLat = lat - degrees(radius / earthRadius)
+	maxLng = lng + degrees(asin(radius / earthRadius) / cos(radians(lat)))
+	minLng = lng - degrees(asin(radius / earthRadius) / cos(radians(lat)))
 
-    return Polls.objects.raw('''SELECT * 
-            					FROM (
-        			               SELECT *
-        			               FROM api_polls
-        			               WHERE loc_lat BETWEEN %(minLat)s AND %(maxLat)s
-        			                 AND loc_lng BETWEEN %(minLng)s AND %(maxLng)s
-        			            ) As FirstCut
-        			            WHERE acos(sin(%(lat)s)*sin(radians(loc_lat)) + cos(%(lat)s)*cos(radians(loc_lat))*cos(radians(loc_lng)-%(lon)s)) * %(earthRadius)s < %(radius)s
-        			            ORDER BY created;
+	return Polls.objects.raw('''SELECT * 
+								FROM (
+									SELECT *
+									FROM api_polls
+									WHERE loc_lat BETWEEN %(minLat)s AND %(maxLat)s
+									AND loc_lng BETWEEN %(minLng)s AND %(maxLng)s
+								) As FirstCut
+								WHERE acos(sin(%(lat)s)*sin(radians(loc_lat)) + cos(%(lat)s)*cos(radians(loc_lat))*cos(radians(loc_lng)-%(lon)s)) * %(earthRadius)s < %(radius)s
+								ORDER BY created;
             				 ''', {"lat":lat, "lng":lng, "radius":radius, "maxLat":maxLat, "minLat":minLat, "maxLng":maxLng, "minLng":minLng, "earthRadius":earthRadius})
 
 
