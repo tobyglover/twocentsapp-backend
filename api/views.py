@@ -185,7 +185,7 @@ def retrievePollsAtLocation(lng, lat, radius):
 									AND loc_lng BETWEEN %(minLng)s AND %(maxLng)s
 								) As FirstCut
 								WHERE acos(sin(%(lat)s)*sin(radians(loc_lat)) + cos(%(lat)s)*cos(radians(loc_lat))*cos(radians(loc_lng)-%(lon)s)) * %(earthRadius)s < %(radius)s
-								ORDER BY created;
+								ORDER BY created DESC;
             				 ''', {"lat":lat, "lng":lng, "radius":radius, "maxLat":maxLat, "minLat":minLat, "maxLng":maxLng, "minLng":minLng, "earthRadius":earthRadius})
 
 
