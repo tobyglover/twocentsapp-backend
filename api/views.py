@@ -2,6 +2,7 @@ from __future__ import division
 
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Users, Polls, PollOptions, Votes
 
@@ -64,6 +65,7 @@ def isUsernameAvailable(request):
 def usernameAvailable(username):
 	return Users.objects.filter(username=username).count() == 0
 
+@csrf_exempt
 def createNewPoll(request, userKey):
 	returnContent = {}
 
