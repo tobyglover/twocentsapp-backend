@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^createNewPoll/(?P<userKey>[0-9a-f]+)/$', views.createNewPoll, name="createNewPoll"),
     # ex: /api/getPolls/
     url(r'^getPolls/$', views.getPolls, name="getPolls"),
+    url(r'^getPollsForUser/(?P<userKey>[0-9a-f]+)/$', views.getPollsForUser, name="getPollsForUser"),
     # ex: /api/voteOnPoll/<userKey>/<pollId>/
     url(r'^voteOnPoll/(?P<userKey>[0-9a-f]+)/(?P<pollId>[0-9a-f]+)/(?P<optionId>[0-9a-f]+)/$', views.voteOnPoll, name="getPolls")
 ]

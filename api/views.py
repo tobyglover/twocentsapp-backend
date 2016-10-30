@@ -131,43 +131,62 @@ def voteOnPoll(request, userKey, pollId, optionId):
 def getPolls(request):
 	returnContent = {}
 	if {'lng', 'lat', 'radius'} <= set(request.GET):
-		returnedPolls = []
 
 		# polls = retrievePollsAtLocation(float(request.GET.get("lng")), float(request.GET.get("lat")), float(request.GET.get("radius")))
 		polls = Polls.objects.all().order_by("-created")
-		for poll in polls:
-			pollData = {"question": poll.question, "pollId": poll.pollId}
-
-			curtime = datetime.utcnow()
-			diff = curtime - poll.created.replace(tzinfo=None)
-
-			pollData["createdAgo"] = int(diff.total_seconds())
-
-			if poll.user.username != "":
-				pollData["username"] = poll.user.username
-
-			pollOptions = PollOptions.objects.filter(poll=poll)
-
-			returnedVotes = {}
-			for pollOption in pollOptions:
-				returnedVotes[pollOption.option] = {"optionId": pollOption.optionId, "count": 0}
-
-			votes = Votes.objects.filter(poll=poll)
-			for vote in votes:
-				returnedVotes[vote.vote.option]["count"] += 1
-
-			pollData["votes"] = returnedVotes
-			returnedPolls.append(pollData)
 
 		returnContent["statusCode"] = 200
-		returnContent["polls"] = returnedPolls
+		returnContent["polls"] = formatPollData(polls);
 	else:
 		returnContent["statusCode"] = 403
 		returnContent["reason"] = "lat/lng and radius not specified"
 
 	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
+def getPollsForUser(request, userKey):
+	returnContent = {}
 
+	try:
+		user = Users.objects.get(userKey=userKey);
+		polls = Polls.objects.filter(user=user).order_by("-created")
+
+		returnContent["statusCode"] = 200
+		returnContent["polls"] = formatPollData(polls);
+		
+	except Users.DoesNotExist:
+		returnContent["statusCode"] = 403
+		returnContent["reason"] = "User does not exist."
+
+	return JsonResponse(returnContent, status=returnContent["statusCode"])
+
+def formatPollData(pollData):
+	formattedData = {}
+
+	for poll in pollData:
+		pollData = {"question": poll.question, "pollId": poll.pollId}
+
+		curtime = datetime.utcnow()
+		diff = curtime - poll.created.replace(tzinfo=None)
+
+		pollData["createdAgo"] = int(diff.total_seconds())
+
+		if poll.user.username != "":
+			pollData["username"] = poll.user.username
+
+		pollOptions = PollOptions.objects.filter(poll=poll)
+
+		returnedVotes = {}
+		for pollOption in pollOptions:
+			returnedVotes[pollOption.option] = {"optionId": pollOption.optionId, "count": 0}
+
+		votes = Votes.objects.filter(poll=poll)
+		for vote in votes:
+			returnedVotes[vote.vote.option]["count"] += 1
+
+		pollData["votes"] = returnedVotes
+		formattedData.append(pollData)
+
+	return formattedData
 
 # adapted from http://www.movable-type.co.uk/scripts/latlong-db.html
 def retrievePollsAtLocation(lng, lat, radius):
