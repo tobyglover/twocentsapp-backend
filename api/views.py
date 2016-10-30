@@ -152,7 +152,7 @@ def getPollsForUser(request, userKey):
 
 		returnContent["statusCode"] = 200
 		returnContent["polls"] = formatPollData(polls);
-		
+
 	except Users.DoesNotExist:
 		returnContent["statusCode"] = 403
 		returnContent["reason"] = "User does not exist."
@@ -160,7 +160,7 @@ def getPollsForUser(request, userKey):
 	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
 def formatPollData(pollData):
-	formattedData = {}
+	formattedData = []
 
 	for poll in pollData:
 		pollData = {"question": poll.question, "pollId": poll.pollId}
