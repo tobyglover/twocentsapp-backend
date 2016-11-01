@@ -10,6 +10,8 @@ import hashlib
 from datetime import datetime, timedelta
 import json
 from math import asin, cos, degrees, radians
+from hexahexacontadecimal import hhc
+from random import randint
 
 # Create your views here.
 
@@ -19,30 +21,26 @@ def index(request):
 def createNewUser(request):
 	returnContent = {}
 
-	if "deviceId" in request.GET:
-		newUser = None
+	newUser = None
 
-		deviceId = request.GET.get("deviceId")
-		userKey = hashlib.md5(deviceId + datetime.utcnow().isoformat()).hexdigest()
+	deviceId = request.GET.get("deviceId")
+	userKey = hashlib.md5(deviceId + datetime.utcnow().isoformat()).hexdigest()
 
-		if "username" in request.GET:
-			username = request.GET.get("username")
-			if usernameAvailable(username):
-				newUser = Users(userKey=userKey, username=username)
-			else:
-				returnContent["statusCode"] = 400
-				returnContent["reason"] = "Username is already taken"
+	if "username" in request.GET:
+		username = request.GET.get("username")
+		if usernameAvailable(username):
+			newUser = Users(userKey=userKey, username=username)
 		else:
-			newUser = Users(userKey=userKey)
+			returnContent["statusCode"] = 400
+			returnContent["reason"] = "Username is already taken"
+	else:
+		newUser = Users(userKey=userKey)
 
-		if newUser != None:
-			newUser.save()
+	if newUser != None:
+		newUser.save()
 
-			returnContent["statusCode"] = 200
-			returnContent["userKey"] = userKey
-	else:	
-		returnContent["statusCode"] = 400
-		returnContent["reason"] = "No deviceId provided."
+		returnContent["statusCode"] = 200
+		returnContent["userKey"] = userKey
 	
 	return JsonResponse(returnContent, status=returnContent["statusCode"])
 
@@ -208,6 +206,15 @@ def retrievePollsAtLocation(lng, lat, radius):
 								WHERE acos(sin(%(lat)s)*sin(radians(loc_lat)) + cos(%(lat)s)*cos(radians(loc_lat))*cos(radians(loc_lng)-%(lon)s)) * %(earthRadius)s < %(radius)s
 								ORDER BY created DESC;
             				 ''', {"lat":lat, "lng":lng, "radius":radius, "maxLat":maxLat, "minLat":minLat, "maxLng":maxLng, "minLng":minLng, "earthRadius":earthRadius})
+
+def getRandomId(modelObject, filterKey):
+	size = 8
+
+	rand = hhc(randint(0, 66**size))
+	while(modelObject.filter(filterKey=rand).count() > 0):
+		rand = hhc(randint(0, 66**size))
+
+	return rand
 
 
 
