@@ -9,10 +9,10 @@ urlpatterns = [
     url(r'^createNewUser/$', views.createNewUser, name="CreateNewUser"),
     url(r'^isUsernameAvailable/$', views.isUsernameAvailable, name="isUsernameAvailable"),
     # ex: /api/createNewPoll/<userKey>/
-    url(r'^createNewPoll/(?P<userKey>[0-9a-f]+)/$', views.createNewPoll, name="createNewPoll"),
+    url(r'^createNewPoll/(?P<userKey>[a-zA-Z0-9_-.~]+)/$', views.createNewPoll, name="createNewPoll"),
     # ex: /api/getPolls/
     url(r'^getPolls/$', views.getPolls, name="getPolls"),
-    url(r'^getPollsForUser/(?P<userKey>[0-9a-f]+)/$', views.getPollsForUser, name="getPollsForUser"),
+    url(r'^getPollsForUser/(?P<userKey>[a-zA-Z0-9_-.~]+)/$', views.getPollsForUser, name="getPollsForUser"),
     # ex: /api/voteOnPoll/<userKey>/<pollId>/
-    url(r'^voteOnPoll/(?P<userKey>[0-9a-f]+)/(?P<pollId>[0-9a-f]+)/(?P<optionId>[0-9a-f]+)/$', views.voteOnPoll, name="getPolls")
+    url(r'^voteOnPoll/(?P<userKey>[a-zA-Z0-9_-.~]+)/(?P<pollId>[a-zA-Z0-9_-.~]+)/(?P<optionId>[a-zA-Z0-9_-.~]+)/$', views.voteOnPoll, name="getPolls")
 ]
