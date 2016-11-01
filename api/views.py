@@ -6,7 +6,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import Users, Polls, PollOptions, Votes
 
-import hashlib
 from datetime import datetime, timedelta
 import json
 from math import asin, cos, degrees, radians
@@ -22,7 +21,7 @@ def createNewUser(request):
 	returnContent = {}
 
 	newUser = None
-	userKey = getRandomId(Users.objects, "userKey")
+	userKey = getRandomId("Users")
 
 	if "username" in request.GET:
 		username = request.GET.get("username")
@@ -70,20 +69,13 @@ def createNewPoll(request, userKey):
 			user = Users.objects.get(userKey=userKey)
 
 			newPoll = Polls(user=user, question=data.get("question"), loc_lat=data.get("lat"), loc_lng=data.get("lng"))
-			newPoll.save()
-			newPoll.pollId = hashlib.md5(str(newPoll.id) + datetime.utcnow().isoformat()).hexdigest()
+			newPoll.pollId = getRandomId("Polls")
 			newPoll.save()
 
 			# Temporary: For MVP, just yes or no. Eventually user will be able to make their own options.
-			yes = PollOptions(poll=newPoll, option="Yes")
-			no = PollOptions(poll=newPoll, option="No")
-
+			yes = PollOptions(poll=newPoll, option="Yes", optionId=getRandomId("PollOptions"))
 			yes.save()
-			yes.optionId = hashlib.md5(str(yes.id) + datetime.utcnow().isoformat()).hexdigest()
-			yes.save()
-
-			no.save()
-			no.optionId = hashlib.md5(str(no.id) + datetime.utcnow().isoformat()).hexdigest()
+			no = PollOptions(poll=newPoll, option="No", optionId=getRandomId("PollOptions"))
 			no.save()
 
 			returnContent["statusCode"] = 200
@@ -205,13 +197,21 @@ def retrievePollsAtLocation(lng, lat, radius):
 								ORDER BY created DESC;
             				 ''', {"lat":lat, "lng":lng, "radius":radius, "maxLat":maxLat, "minLat":minLat, "maxLng":maxLng, "minLng":minLng, "earthRadius":earthRadius})
 
-def getRandomId(modelObject, filterKey):
+def getRandomId(modelObject):
 	size = 8
 
-	rand = hhc(randint(0, 66**size))
-	while(modelObject.filter(filterKey=rand).count() > 0):
+	check = True
+	while(check):
 		rand = hhc(randint(0, 66**size))
-
+		if modelObject == "Users":
+			check = Users.objects.filter(userKey=rand).count() > 0
+		elif modelObject == "PollOptions":
+			check = PollOptions.objects.filter(optionId=rand).count() > 0
+		elif modelObject == "Polls":
+			check = Polls.objects.filter(pollId=rand).count() > 0
+		else:
+			return -1
+		
 	return rand
 
 
