@@ -22,9 +22,7 @@ def createNewUser(request):
 	returnContent = {}
 
 	newUser = None
-
-	deviceId = request.GET.get("deviceId")
-	userKey = hashlib.md5(deviceId + datetime.utcnow().isoformat()).hexdigest()
+	userKey = getRandomId(Users.objects, "userKey")
 
 	if "username" in request.GET:
 		username = request.GET.get("username")
