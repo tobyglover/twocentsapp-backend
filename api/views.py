@@ -120,8 +120,8 @@ def getPolls(request):
 	returnContent = {}
 	if {'lng', 'lat', 'radius'} <= set(request.GET):
 
-		# polls = retrievePollsAtLocation(float(request.GET.get("lng")), float(request.GET.get("lat")), float(request.GET.get("radius")))
-		polls = Polls.objects.all().order_by("-created")
+		polls = retrievePollsAtLocation(float(request.GET.get("lng")), float(request.GET.get("lat")), int(request.GET.get("radius")))
+		# polls = Polls.objects.all().order_by("-created")
 
 		returnContent["statusCode"] = 200
 		returnContent["polls"] = formatPollData(polls);
