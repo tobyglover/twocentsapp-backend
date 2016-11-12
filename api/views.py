@@ -178,24 +178,37 @@ def formatPollData(pollData):
 
 # adapted from http://www.movable-type.co.uk/scripts/latlong-db.html
 def retrievePollsAtLocation(lng, lat, radius):
-	# mean radius of Earth in km
-	earthRadius = 6371
 
-	maxLat = lat + degrees(radius / earthRadius)
-	minLat = lat - degrees(radius / earthRadius)
-	maxLng = lng + degrees(asin(radius / earthRadius) / cos(radians(lat)))
-	minLng = lng - degrees(asin(radius / earthRadius) / cos(radians(lat)))
+	return Polls.objects.raw('''SELECT
+						    	*, (
+									6371 * acos (
+									cos ( radians(%(lat)s) )
+									* cos( radians( loc_lat ) )
+									* cos( radians( loc_lng ) - radians(%(lng)s) )
+									+ sin ( radians(%(lat)s) )
+									* sin( radians( loc_lat ) ) )
+								) AS distance
+							FROM api_polls
+							HAVING distance < %(radius)s
+							ORDER BY created DESC
+							LIMIT 100;
+            				 ''', {"lat":lat, "lng":lng, "radius":radius})
+	
 
-	return Polls.objects.raw('''SELECT * 
-								FROM (
-									SELECT *
-									FROM api_polls
-									WHERE loc_lat BETWEEN %(minLat)s AND %(maxLat)s
-									AND loc_lng BETWEEN %(minLng)s AND %(maxLng)s
-								) As FirstCut
-								WHERE acos(sin(%(lat)s)*sin(radians(loc_lat)) + cos(%(lat)s)*cos(radians(loc_lat))*cos(radians(loc_lng)-%(lng)s)) * %(earthRadius)s < %(radius)s
-								ORDER BY created DESC;
-            				 ''', {"lat":lat, "lng":lng, "radius":radius, "maxLat":maxLat, "minLat":minLat, "maxLng":maxLng, "minLng":minLng, "earthRadius":earthRadius})
+	# maxLat = lat + degrees(radius / earthRadius)
+	# minLat = lat - degrees(radius / earthRadius)
+	# maxLng = lng + degrees(asin(radius / earthRadius) / cos(radians(lat)))
+	# minLng = lng - degrees(asin(radius / earthRadius) / cos(radians(lat)))
+	# return Polls.objects.raw('''SELECT * 
+	# 							FROM (
+	# 								SELECT *
+	# 								FROM api_polls
+	# 								WHERE loc_lat BETWEEN %(minLat)s AND %(maxLat)s
+	# 								AND loc_lng BETWEEN %(minLng)s AND %(maxLng)s
+	# 							) As FirstCut
+	# 							WHERE acos(sin(%(lat)s)*sin(radians(loc_lat)) + cos(%(lat)s)*cos(radians(loc_lat))*cos(radians(loc_lng)-%(lng)s)) * %(earthRadius)s < %(radius)s
+	# 							ORDER BY created DESC;
+ #            				 ''', {"lat":lat, "lng":lng, "radius":radius, "maxLat":maxLat, "minLat":minLat, "maxLng":maxLng, "minLng":minLng, "earthRadius":earthRadius})
 
 def getRandomId(modelObject):
 	size = 8
